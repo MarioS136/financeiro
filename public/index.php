@@ -302,6 +302,30 @@ $recentTransactions =
                 margin-bottom: 0;
             }
 
+            .account-cards {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .account-card {
+                flex: 1 1 280px;
+                border: 1px solid #ccc;
+                padding: 20px;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+
+            .account-card h3 {
+                margin-top: 0;
+            }
+
+            .account-balance {
+                font-size: 28px;
+            }
+
     </style>
 
 </head>
@@ -484,32 +508,7 @@ $recentTransactions =
 
 <?php else: ?>
 
-    <table border="1" cellpadding="8">
-
-        <thead>
-
-            <tr>
-
-                <th>Nome</th>
-
-                <th>Tipo</th>
-
-                <th>Saldo inicial</th>
-
-                <th>Receitas</th>
-
-                <th>Despesas</th>
-
-                <th>Saldo atual</th>
-
-                <th>Estado</th>
-
-            </tr>
-
-        </thead>
-
-
-        <tbody>
+    <div class="account-cards">
 
         <?php foreach ($accounts as $account): ?>
 
@@ -537,49 +536,36 @@ $recentTransactions =
 
             ?>
 
+            <div class="account-card">
 
-            <tr>
-
-                <td>
-
+                <h3>
                     <?= htmlspecialchars(
                         $account['name'],
                         ENT_QUOTES,
                         'UTF-8'
                     ) ?>
+                </h3>
 
-                </td>
 
+                <p>
 
-                <td>
-
-                    <?php if (
-                        $account['type'] === 'checking'
-                    ): ?>
+                    <?php if ($account['type'] === 'checking'): ?>
 
                         Conta à ordem
 
-                    <?php elseif (
-                        $account['type'] === 'savings'
-                    ): ?>
+                    <?php elseif ($account['type'] === 'savings'): ?>
 
                         Poupança
 
-                    <?php elseif (
-                        $account['type'] === 'cash'
-                    ): ?>
+                    <?php elseif ($account['type'] === 'cash'): ?>
 
                         Dinheiro
 
-                    <?php elseif (
-                        $account['type'] === 'credit_card'
-                    ): ?>
+                    <?php elseif ($account['type'] === 'credit_card'): ?>
 
                         Cartão de crédito
 
-                    <?php elseif (
-                        $account['type'] === 'investment'
-                    ): ?>
+                    <?php elseif ($account['type'] === 'investment'): ?>
 
                         Investimento
 
@@ -589,50 +575,46 @@ $recentTransactions =
 
                     <?php endif; ?>
 
-                </td>
+                </p>
 
 
-                <td>
-
-                    <?= format_money(
-                        $initialCents
-                    ) ?>
-
-                </td>
+                <hr>
 
 
-                <td>
+                <p>
+                    Saldo atual
+                </p>
 
-                    <?= format_money(
-                        $incomeCents
-                    ) ?>
-
-                </td>
-
-
-                <td>
-
-                    <?= format_money(
-                        $expenseCents
-                    ) ?>
-
-                </td>
-
-
-                <td>
+                <p class="account-balance">
 
                     <strong>
-
-                        <?= format_money(
-                            $currentCents
-                        ) ?>
-
+                        <?= format_money($currentCents) ?>
                     </strong>
 
-                </td>
+                </p>
 
 
-                <td>
+                <p>
+                    Saldo inicial:
+                    <?= format_money($initialCents) ?>
+                </p>
+
+
+                <p>
+                    Receitas:
+                    <?= format_money($incomeCents) ?>
+                </p>
+
+
+                <p>
+                    Despesas:
+                    <?= format_money($expenseCents) ?>
+                </p>
+
+
+                <p>
+
+                    Estado:
 
                     <?php if (
                         (int) $account['is_active'] === 1
@@ -646,15 +628,24 @@ $recentTransactions =
 
                     <?php endif; ?>
 
-                </td>
+                </p>
 
-            </tr>
+
+                <p>
+
+                    <a
+                        href="account-edit.php?id=<?= (int) $account['id'] ?>"
+                    >
+                        Editar conta
+                    </a>
+
+                </p>
+
+            </div>
 
         <?php endforeach; ?>
 
-        </tbody>
-
-    </table>
+    </div>
 
 
     <p>

@@ -590,40 +590,12 @@ $recentTransactions =
 <hr>
 
 
-<!-- =====================================================
-     NAVEGAÇÃO
-     ===================================================== -->
-
-<h2>Navegação</h2>
-
-<p>
-
-    <a href="transactions.php">
-        Transações
-    </a>
-
-    |
-
-    <a href="accounts.php">
-        Contas
-    </a>
-
-    |
-
-    <a href="logout.php">
-        Sair
-    </a>
-
-</p>
-
-
-<hr>
-
 
 <!-- =====================================================
      RESUMO
      ===================================================== -->
 
+<section class="section">
 <h2>Resumo financeiro</h2>
 <form method="GET">
 
@@ -709,16 +681,15 @@ $recentTransactions =
     </div>
 
 </div>
+</section>
 
 <hr>
-
 
 <!-- =====================================================
      CONTAS
      ===================================================== -->
-
+<section class="section">
 <h2>Contas</h2>
-
 
 <?php if (empty($accounts)): ?>
 
@@ -883,15 +854,14 @@ $recentTransactions =
     </p>
 
 <?php endif; ?>
-
+</section>
 
 <hr>
-
 
 <!-- =====================================================
      ÚLTIMAS TRANSAÇÕES
      ===================================================== -->
-
+<section class="section">
 <h2>Últimas transações</h2>
 
 <?php if (empty($recentTransactions)): ?>
@@ -1020,8 +990,9 @@ $recentTransactions =
     </p>
 
 <?php endif; ?>
+</section>
 
-
+</main>
 </body>
 
 </html>

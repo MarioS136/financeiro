@@ -83,20 +83,6 @@ if ($period === 'this_month') {
         date('Y-m-d');
 }
 
-/*
- * =========================================================
- * RESUMO FINANCEIRO
- * =========================================================
- *
- * Receitas:
- * soma de todas as transações income
- *
- * Despesas:
- * soma de todas as transações expense
- *
- * Resultado:
- * receitas - despesas
- */
 
 $stmt = $pdo->prepare(
     'SELECT
@@ -125,11 +111,17 @@ $stmt = $pdo->prepare(
      FROM transactions
 
      WHERE user_id = :user_id'
+     . $dateCondition
 );
 
-$stmt->execute([
-    'user_id' => $userId
-]);
+$stmt->execute(
+    array_merge(
+        [
+            'user_id' => $userId
+        ],
+        $dateParams
+    )
+);
 
 $summary = $stmt->fetch();
 

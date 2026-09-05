@@ -11,20 +11,18 @@ require_login();
 
 $userId = current_user_id();
 
-$userName = $_SESSION['user_name'] ?? 'Utilizador';
-$userRole = $_SESSION['user_role'] ?? 'user';
-
-
 /*
  * =========================================================
- * BUSCAR CONTAS
+ * CONTAS
  * =========================================================
  *
- * Saldo atual:
+ * Buscar as contas do utilizador e calcular:
  *
  * saldo inicial
  * + receitas
  * - despesas
+ *
+ * Os totais são calculados pelo MariaDB usando DECIMAL.
  */
 
 $stmt = $pdo->prepare(
@@ -72,9 +70,7 @@ $stmt = $pdo->prepare(
         a.initial_balance,
         a.is_active
 
-     ORDER BY
-        a.is_active DESC,
-        a.name ASC'
+     ORDER BY a.name ASC'
 );
 
 $stmt->execute([
@@ -189,9 +185,9 @@ function account_type_label(string $type): string
     }
 
 
-    .user-info {
-        text-align: right;
-        font-size: 14px;
+    .page-title {
+        margin: 0 0 5px 0;
+        font-size: 28px;
     }
 
 
@@ -214,7 +210,7 @@ function account_type_label(string $type): string
         border: 1px solid #ddd;
         border-radius: 7px;
         text-decoration: none;
-        font-size: 14px;
+        transition: background 0.15s;
     }
 
 
@@ -252,7 +248,7 @@ function account_type_label(string $type): string
         justify-content: space-between;
         align-items: center;
         gap: 15px;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
 
@@ -271,9 +267,9 @@ function account_type_label(string $type): string
         border: 1px solid #ccc;
         border-radius: 6px;
         text-decoration: none;
-        background: #ffffff;
         cursor: pointer;
         font-size: 14px;
+        background: #ffffff;
     }
 
 
@@ -298,48 +294,88 @@ function account_type_label(string $type): string
 
     .account-cards {
         display: grid;
-        grid-template-columns:
-            repeat(
-                auto-fit,
-                minmax(280px, 1fr)
-            );
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
         gap: 20px;
     }
 
 
     .account-card {
         border: 1px solid #ddd;
-        border-radius: 10px;
         padding: 20px;
+        border-radius: 10px;
         background: #fafafa;
-        min-width: 0;
-    }
-
-
-    .account-card.inactive {
-        opacity: 0.75;
-    }
-
-
-    .account-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 15px;
     }
 
 
     .account-card h3 {
-        margin: 0 0 6px 0;
+        margin-top: 0;
+        margin-bottom: 6px;
         font-size: 20px;
-        overflow-wrap: anywhere;
     }
 
 
     .account-type {
-        margin: 0;
-        font-size: 14px;
+        margin-top: 0;
         color: #666;
+        font-size: 14px;
+    }
+
+
+    .account-balance-label {
+        margin-bottom: 5px;
+        color: #666;
+        font-size: 14px;
+    }
+
+
+    .account-balance {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+
+    .account-details {
+        border-top: 1px solid #ddd;
+        padding-top: 15px;
+    }
+
+
+    .account-detail {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+
+    .account-detail:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .account-detail-label {
+        color: #666;
+    }
+
+
+    .account-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+    }
+
+
+    .account-actions form {
+        margin: 0;
     }
 
 
@@ -351,109 +387,47 @@ function account_type_label(string $type): string
         display: inline-block;
         padding: 4px 9px;
         border-radius: 12px;
-        font-size: 12px;
-        white-space: nowrap;
+        font-size: 13px;
+        border: 1px solid #aaa;
     }
 
 
     .status-active {
-        border: 1px solid #999;
+        font-weight: bold;
     }
 
 
     .status-inactive {
-        border: 1px solid #999;
-    }
-
-
-    /* =====================================================
-       SALDO
-       ===================================================== */
-
-    .account-balance-area {
-        margin: 25px 0;
-        padding: 18px;
-        border-radius: 8px;
-        background: #ffffff;
-        border: 1px solid #ddd;
-    }
-
-
-    .account-balance-label {
-        margin: 0 0 6px 0;
-        font-size: 13px;
         color: #666;
     }
 
 
-    .account-balance {
-        margin: 0;
-        font-size: 30px;
-        font-weight: bold;
-        overflow-wrap: anywhere;
-    }
-
-
     /* =====================================================
-       DETALHES FINANCEIROS
+       ESTADOS FINANCEIROS
        ===================================================== */
 
-    .account-details {
-        display: grid;
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-        gap: 12px;
-    }
-
-
-    .detail {
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 7px;
-        background: #ffffff;
-    }
-
-
-    .detail-label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 12px;
-        color: #666;
-    }
-
-
-    .detail-value {
+    .positive {
         font-weight: bold;
-        overflow-wrap: anywhere;
+    }
+
+
+    .negative {
+        font-weight: bold;
+    }
+
+
+    .neutral {
+        font-weight: bold;
     }
 
 
     /* =====================================================
-       AÇÕES
-       ===================================================== */
-
-    .account-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #ddd;
-    }
-
-
-    .account-actions form {
-        margin: 0;
-    }
-
-
-    /* =====================================================
-       ESTADO VAZIO
+       VAZIO
        ===================================================== */
 
     .empty-state {
         text-align: center;
-        padding: 35px 15px;
+        padding: 30px 10px;
     }
 
 
@@ -469,7 +443,7 @@ function account_type_label(string $type): string
     @media (max-width: 700px) {
 
         body {
-            padding: 0;
+            padding-bottom: 20px;
         }
 
 
@@ -478,26 +452,31 @@ function account_type_label(string $type): string
         }
 
 
-        .header-content {
-            flex-direction: column;
-            align-items: flex-start;
+        .header {
+            padding: 15px 0;
         }
 
 
-        .user-info {
-            text-align: left;
+        .app-name {
+            font-size: 21px;
+        }
+
+
+        .page-title {
+            font-size: 24px;
         }
 
 
         .navigation {
             display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
 
 
         .navigation a {
             text-align: center;
+            width: 100%;
         }
 
 
@@ -533,30 +512,37 @@ function account_type_label(string $type): string
         }
 
 
-        .account-card-header {
+        .account-detail {
             flex-direction: column;
-        }
-
-
-        .account-details {
-            grid-template-columns: 1fr;
+            gap: 3px;
         }
 
 
         .account-actions {
             flex-direction: column;
+            align-items: stretch;
         }
 
 
         .account-actions .btn,
+        .account-actions form,
         .account-actions button {
             width: 100%;
-            text-align: center;
+        }
+
+    }
+
+
+    @media (min-width: 701px) and (max-width: 1000px) {
+
+        .account-cards {
+            grid-template-columns: repeat(2, 1fr);
         }
 
     }
 
 </style>
+
 
 </head>
 
@@ -564,43 +550,12 @@ function account_type_label(string $type): string
 
 <header class="header">
 
-<div class="container header-content">
+
+<div class="container">
 
     <h1 class="app-name">
-        Gestão Financeira
+        Financeiro
     </h1>
-
-
-    <div class="user-info">
-
-        <div>
-
-            Olá,
-
-            <strong>
-                <?= htmlspecialchars(
-                    $userName,
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            Perfil:
-
-            <?= htmlspecialchars(
-                $userRole,
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>
-
-        </div>
-
-    </div>
 
 </div>
 
@@ -621,18 +576,13 @@ function account_type_label(string $type): string
     </a>
 
 
-    <a
-        href="transactions.php"
-    >
-        Transações
+    <a href="accounts.php" class="active">
+        Contas
     </a>
 
 
-    <a
-        href="accounts.php"
-        class="active"
-    >
-        Contas
+    <a href="transactions.php">
+        Transações
     </a>
 
 
@@ -655,7 +605,7 @@ function account_type_label(string $type): string
 
     <div class="section-header">
 
-        <h2>
+        <h2 class="page-title">
             Minhas contas
         </h2>
 
@@ -676,7 +626,7 @@ function account_type_label(string $type): string
         <div class="empty-state">
 
             <p>
-                Ainda não tens nenhuma conta.
+                Ainda não tens contas cadastradas.
             </p>
 
 
@@ -702,7 +652,7 @@ function account_type_label(string $type): string
                 <?php
 
                 /*
-                 * Converter valores da BD
+                 * Converter valores monetários
                  * para cêntimos inteiros.
                  */
 
@@ -725,7 +675,11 @@ function account_type_label(string $type): string
 
 
                 /*
-                 * Saldo atual.
+                 * Saldo atual:
+                 *
+                 * saldo inicial
+                 * + receitas
+                 * - despesas
                  */
 
                 $currentCents =
@@ -734,153 +688,150 @@ function account_type_label(string $type): string
                     - $expenseCents;
 
 
-                $isActive =
-                    (int) $account['is_active'] === 1;
+                /*
+                 * Classe visual do saldo.
+                 */
+
+                if ($currentCents > 0) {
+
+                    $balanceClass = 'positive';
+
+                } elseif ($currentCents < 0) {
+
+                    $balanceClass = 'negative';
+
+                } else {
+
+                    $balanceClass = 'neutral';
+                }
 
                 ?>
 
 
-                <article
-                    class="account-card
-                    <?= !$isActive
-                        ? 'inactive'
-                        : '' ?>"
-                >
+                <article class="account-card">
 
 
-                    <div class="account-card-header">
+                    <h3>
+
+                        <?= htmlspecialchars(
+                            $account['name'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+
+                    </h3>
 
 
-                        <div>
+                    <p class="account-type">
 
-                            <h3>
+                        <?= htmlspecialchars(
+                            account_type_label(
+                                $account['type']
+                            ),
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
 
-                                <?= htmlspecialchars(
-                                    $account['name'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-
-                            </h3>
-
-
-                            <p class="account-type">
-
-                                <?= htmlspecialchars(
-                                    account_type_label(
-                                        $account['type']
-                                    ),
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-
-                            </p>
-
-                        </div>
+                    </p>
 
 
-                        <?php if ($isActive): ?>
-
-                            <span
-                                class="status status-active"
-                            >
-                                Ativa
-                            </span>
-
-                        <?php else: ?>
-
-                            <span
-                                class="status status-inactive"
-                            >
-                                Inativa
-                            </span>
-
-                        <?php endif; ?>
+                    <p class="account-balance-label">
+                        Saldo atual
+                    </p>
 
 
-                    </div>
+                    <p
+                        class="account-balance <?= $balanceClass ?>"
+                    >
 
+                        <?= format_money(
+                            $currentCents
+                        ) ?>
 
-                    <!-- SALDO -->
+                    </p>
 
-                    <div class="account-balance-area">
-
-                        <p class="account-balance-label">
-                            Saldo atual
-                        </p>
-
-
-                        <p class="account-balance">
-
-                            <?= format_money(
-                                $currentCents
-                            ) ?>
-
-                        </p>
-
-                    </div>
-
-
-                    <!-- DETALHES -->
 
                     <div class="account-details">
 
 
-                        <div class="detail">
+                        <div class="account-detail">
 
-                            <span class="detail-label">
+                            <span class="account-detail-label">
                                 Saldo inicial
                             </span>
 
-                            <span class="detail-value">
-
+                            <strong>
                                 <?= format_money(
                                     $initialCents
                                 ) ?>
-
-                            </span>
+                            </strong>
 
                         </div>
 
 
-                        <div class="detail">
+                        <div class="account-detail">
 
-                            <span class="detail-label">
+                            <span class="account-detail-label">
                                 Receitas
                             </span>
 
-                            <span class="detail-value">
-
-                                + <?= format_money(
+                            <strong>
+                                <?= format_money(
                                     $incomeCents
                                 ) ?>
-
-                            </span>
+                            </strong>
 
                         </div>
 
 
-                        <div class="detail">
+                        <div class="account-detail">
 
-                            <span class="detail-label">
+                            <span class="account-detail-label">
                                 Despesas
                             </span>
 
-                            <span class="detail-value">
-
-                                - <?= format_money(
+                            <strong>
+                                <?= format_money(
                                     $expenseCents
                                 ) ?>
+                            </strong>
 
+                        </div>
+
+
+                        <div class="account-detail">
+
+                            <span class="account-detail-label">
+                                Estado
                             </span>
+
+
+                            <?php if (
+                                (int) $account['is_active'] === 1
+                            ): ?>
+
+
+                                <span class="status status-active">
+                                    Ativa
+                                </span>
+
+
+                            <?php else: ?>
+
+
+                                <span class="status status-inactive">
+                                    Inativa
+                                </span>
+
+
+                            <?php endif; ?>
+
 
                         </div>
 
 
                     </div>
 
-
-                    <!-- AÇÕES -->
 
                     <div class="account-actions">
 
@@ -893,7 +844,9 @@ function account_type_label(string $type): string
                         </a>
 
 
-                        <?php if ($isActive): ?>
+                        <?php if (
+                            (int) $account['is_active'] === 1
+                        ): ?>
 
 
                             <form

@@ -653,6 +653,25 @@ $recentTransactions =
             }
 
         }
+
+        @media screen and (max-width: 768px) {
+
+            .summary-cards {
+                display: flex;
+                flex-direction: column !important;
+                flex-wrap: nowrap;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .summary-cards .summary-card {
+                display: block;
+                flex: none;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+
+        }
     </style>
 
 </head>

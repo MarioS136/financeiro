@@ -668,166 +668,129 @@ $recentTransactions =
 
 <h2>Últimas transações</h2>
 
-
-<?php if (
-    empty($recentTransactions)
-): ?>
+<?php if (empty($recentTransactions)): ?>
 
     <p>
-        Ainda não tens transações.
-    </p>
-
-    <p>
-
-        <a href="transaction-create.php">
-            + Criar primeira transação
-        </a>
-
+        Não existem transações para o período selecionado.
     </p>
 
 <?php else: ?>
 
+    <div class="transactions-table-wrapper">
 
-    <table border="1" cellpadding="8">
+        <table>
 
-        <thead>
+            <thead>
 
-            <tr>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Conta</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                </tr>
 
-                <th>Data</th>
+            </thead>
 
-                <th>Tipo</th>
+            <tbody>
 
-                <th>Conta</th>
+                <?php foreach (
+                    $recentTransactions
+                    as $transaction
+                ): ?>
 
-                <th>Categoria</th>
+                    <?php
 
-                <th>Descrição</th>
+                    $amountCents =
+                        decimal_to_cents(
+                            $transaction['amount']
+                        );
 
-                <th>Valor</th>
+                    ?>
 
-            </tr>
+                    <tr>
 
-        </thead>
+                        <td>
+                            <?= htmlspecialchars(
+                                $transaction['transaction_date'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                        </td>
 
+                        <td>
 
-        <tbody>
+                            <?php if (
+                                $transaction['type'] === 'income'
+                            ): ?>
 
-        <?php foreach (
-            $recentTransactions
-            as $transaction
-        ): ?>
+                                Receita
 
-            <?php
+                            <?php else: ?>
 
-            $amountCents =
-                decimal_to_cents(
-                    $transaction['amount']
-                );
+                                Despesa
 
-            ?>
+                            <?php endif; ?>
 
+                        </td>
 
-            <tr>
+                        <td>
+                            <?= htmlspecialchars(
+                                $transaction['account_name'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                        </td>
 
-                <td>
+                        <td>
+                            <?= htmlspecialchars(
+                                $transaction['category_name'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                        </td>
 
-                    <?= htmlspecialchars(
-                        $transaction['transaction_date'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
+                        <td>
+                            <?= htmlspecialchars(
+                                $transaction['description'] ?? '',
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                        </td>
 
-                </td>
+                        <td>
 
+                            <?php if (
+                                $transaction['type'] === 'income'
+                            ): ?>
 
-                <td>
+                                +
 
-                    <?php if (
-                        $transaction['type'] === 'income'
-                    ): ?>
+                            <?php else: ?>
 
-                        Receita
+                                -
 
-                    <?php else: ?>
+                            <?php endif; ?>
 
-                        Despesa
+                            <?= format_money($amountCents) ?>
 
-                    <?php endif; ?>
+                        </td>
 
-                </td>
+                    </tr>
 
+                <?php endforeach; ?>
 
-                <td>
+            </tbody>
 
-                    <?= htmlspecialchars(
-                        $transaction['account_name'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
+        </table>
 
-                </td>
-
-
-                <td>
-
-                    <?= htmlspecialchars(
-                        $transaction['category_name'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-
-                </td>
-
-
-                <td>
-
-                    <?= htmlspecialchars(
-                        $transaction['description'] ?? '',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-
-                </td>
-
-
-                <td>
-
-                    <?php if (
-                        $transaction['type'] === 'income'
-                    ): ?>
-
-                        +
-
-                    <?php else: ?>
-
-                        -
-
-                    <?php endif; ?>
-
-
-                    <?= format_money(
-                        $amountCents
-                    ) ?>
-
-                </td>
-
-            </tr>
-
-
-        <?php endforeach; ?>
-
-        </tbody>
-
-    </table>
-
+    </div>
 
     <p>
-
         <a href="transactions.php">
-            Ver todas as transações
+            Ver todas as transações →
         </a>
-
     </p>
 
 <?php endif; ?>

@@ -412,21 +412,22 @@ $recentTransactions =
         .summary-cards {
             display: flex;
             flex-direction: row;
+            flex-wrap: nowrap;
             gap: 20px;
-            width: 100%;
+            margin: 20px 0;
         }
 
         .summary-card {
-            flex: 1;
-            border: 1px solid #ddd;
+            flex: 1 1 0;
+            border: 1px solid #ccc;
             padding: 20px;
             border-radius: 8px;
             background: #fafafa;
+            box-sizing: border-box;
         }
 
         .summary-card h3 {
             margin-top: 0;
-            font-size: 16px;
         }
 
         .summary-card p {
@@ -780,7 +781,7 @@ $recentTransactions =
 
 <br>
 
-<div class="summary-card">
+<div class="summary-cards">
 
     <div class="summary-card">
         <h3>Receitas</h3>

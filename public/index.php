@@ -13,6 +13,75 @@ $userId = current_user_id();
 $userName = $_SESSION['user_name'] ?? 'Utilizador';
 $userRole = $_SESSION['user_role'] ?? 'user';
 
+/*
+ * =========================================================
+ * FILTRO DE PERÍODO
+ * =========================================================
+ */
+
+$period = $_GET['period'] ?? 'all';
+
+$allowedPeriods = [
+    'all',
+    'this_month',
+    'last_month',
+    'last_30_days'
+];
+
+if (!in_array($period, $allowedPeriods, true)) {
+    $period = 'all';
+}
+
+
+/*
+ * Construir a condição de data.
+ *
+ * Usamos parâmetros SQL para evitar
+ * colocar valores diretamente na query.
+ */
+
+$dateCondition = '';
+$dateParams = [];
+
+if ($period === 'this_month') {
+
+    $dateCondition = '
+        AND transaction_date >= :start_date
+        AND transaction_date < :end_date
+    ';
+
+    $dateParams['start_date'] =
+        date('Y-m-01');
+
+    $dateParams['end_date'] =
+        date('Y-m-01', strtotime('+1 month'));
+
+} elseif ($period === 'last_month') {
+
+    $dateCondition = '
+        AND transaction_date >= :start_date
+        AND transaction_date < :end_date
+    ';
+
+    $dateParams['start_date'] =
+        date('Y-m-01', strtotime('-1 month'));
+
+    $dateParams['end_date'] =
+        date('Y-m-01');
+
+} elseif ($period === 'last_30_days') {
+
+    $dateCondition = '
+        AND transaction_date >= :start_date
+        AND transaction_date <= :end_date
+    ';
+
+    $dateParams['start_date'] =
+        date('Y-m-d', strtotime('-29 days'));
+
+    $dateParams['end_date'] =
+        date('Y-m-d');
+}
 
 /*
  * =========================================================

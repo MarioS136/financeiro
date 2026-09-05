@@ -34,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      */
 
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
-        $errors[] = 'Pedido inválido. Atualiza a página e tenta novamente.';
+        $errors[] =
+            'Pedido inválido. Atualiza a página e tenta novamente.';
     }
 
 
@@ -45,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      */
 
     $name = trim($_POST['name'] ?? '');
+
     $type = $_POST['type'] ?? '';
+
     $initialBalance = trim(
         $_POST['initial_balance'] ?? '0.00'
     );
@@ -174,7 +177,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <title>Nova conta</title>
 
-
 <style>
 
     /*
@@ -196,14 +198,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     body {
         margin: 0;
-        padding: 0;
 
         font-family:
             Arial,
             sans-serif;
 
         background: #f5f6f8;
+
         color: #222;
+    }
+
+
+    a {
+        color: inherit;
     }
 
 
@@ -214,8 +221,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      */
 
     .container {
-        width: min(700px, 92%);
-        margin: 40px auto;
+        width: min(900px, 92%);
+
+        margin: 0 auto;
     }
 
 
@@ -225,18 +233,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * =====================================================
      */
 
-    .page-header {
-        margin-bottom: 25px;
+    .header {
+        background: #ffffff;
+
+        border-bottom: 1px solid #ddd;
+
+        padding: 18px 0;
+
+        margin-bottom: 30px;
     }
 
-    .page-header h1 {
-        margin: 0 0 8px 0;
-        font-size: 30px;
+    .header-content {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
     }
 
-    .page-header p {
+    .app-name {
         margin: 0;
-        color: #666;
+
+        font-size: 24px;
     }
 
 
@@ -248,35 +268,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     .navigation {
         display: flex;
-        gap: 10px;
+
+        align-items: center;
+
+        gap: 8px;
+
         flex-wrap: wrap;
 
-        margin-bottom: 25px;
+        margin-bottom: 30px;
+
+        padding: 8px;
+
+        background: #ffffff;
+
+        border: 1px solid #ddd;
+
+        border-radius: 10px;
     }
 
     .navigation a {
         display: inline-block;
 
-        padding: 9px 14px;
+        padding: 10px 16px;
 
-        background: #ffffff;
-
-        border: 1px solid #ddd;
-        border-radius: 6px;
+        border-radius: 7px;
 
         text-decoration: none;
 
-        color: #222;
+        font-size: 14px;
+
+        font-weight: 600;
     }
 
     .navigation a:hover {
         background: #eeeeee;
     }
 
+    .navigation .active {
+        background: #eeeeee;
+    }
+
+    .navigation .logout {
+        margin-left: auto;
+    }
+
 
     /*
      * =====================================================
-     * FORMULÁRIO
+     * CABEÇALHO DA PÁGINA
+     * =====================================================
+     */
+
+    .page-header {
+        margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px 0;
+
+        font-size: 30px;
+    }
+
+    .page-header p {
+        margin: 0;
+
+        color: #666;
+    }
+
+
+    /*
+     * =====================================================
+     * CARD DO FORMULÁRIO
      * =====================================================
      */
 
@@ -284,12 +346,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         background: #ffffff;
 
         border: 1px solid #ddd;
+
         border-radius: 10px;
 
         padding: 28px;
 
+        margin-bottom: 30px;
+
         box-shadow:
             0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+
+    /*
+     * =====================================================
+     * ERROS
+     * =====================================================
+     */
+
+    .errors {
+        margin-bottom: 25px;
+
+        padding: 15px 18px;
+
+        border: 1px solid #d8b4b4;
+
+        border-radius: 7px;
+
+        background: #faf3f3;
+    }
+
+    .errors ul {
+        margin: 0;
+
+        padding-left: 20px;
+    }
+
+    .errors li {
+        margin-bottom: 6px;
+    }
+
+    .errors li:last-child {
+        margin-bottom: 0;
     }
 
 
@@ -318,6 +416,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         font-size: 13px;
 
+        line-height: 1.4;
+
         color: #666;
     }
 
@@ -330,68 +430,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     .form-group input,
     .form-group select {
-
         width: 100%;
 
         padding: 11px 12px;
 
         border: 1px solid #ccc;
-        border-radius: 6px;
+
+        border-radius: 7px;
 
         background: #ffffff;
 
-        font-size: 16px;
+        color: #222;
 
+        font-size: 16px;
     }
 
     .form-group input:focus,
     .form-group select:focus {
-
         outline: none;
 
         border-color: #777;
 
-    }
-
-
-    /*
-     * =====================================================
-     * ERROS
-     * =====================================================
-     */
-
-    .errors {
-
-        margin-bottom: 25px;
-
-        padding: 15px 18px;
-
-        border: 1px solid #d8b4b4;
-
-        border-radius: 6px;
-
-        background: #faf3f3;
-
-    }
-
-    .errors ul {
-
-        margin: 0;
-
-        padding-left: 20px;
-
-    }
-
-    .errors li {
-
-        margin-bottom: 5px;
-
-    }
-
-    .errors li:last-child {
-
-        margin-bottom: 0;
-
+        box-shadow:
+            0 0 0 2px rgba(0, 0, 0, 0.05);
     }
 
 
@@ -402,28 +463,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      */
 
     .form-actions {
-
         display: flex;
 
-        gap: 10px;
-
         align-items: center;
+
+        gap: 10px;
 
         flex-wrap: wrap;
 
         margin-top: 10px;
 
+        padding-top: 5px;
     }
 
     .btn {
-
         display: inline-block;
 
         padding: 10px 16px;
 
-        border-radius: 6px;
-
         border: 1px solid #ccc;
+
+        border-radius: 7px;
 
         background: #ffffff;
 
@@ -434,19 +494,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 15px;
 
         cursor: pointer;
-
     }
 
     .btn:hover {
-
         background: #eeeeee;
-
     }
 
     .btn-primary {
-
         font-weight: bold;
-
     }
 
 
@@ -456,44 +511,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * =====================================================
      */
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
 
         .container {
-
             width: 94%;
-
-            margin: 20px auto;
-
         }
 
-        .page-header h1 {
-
-            font-size: 26px;
-
+        .header {
+            margin-bottom: 20px;
         }
 
-        .form-card {
-
-            padding: 20px;
-
+        .header-content {
+            align-items: flex-start;
         }
 
-        .form-actions {
+        .app-name {
+            font-size: 22px;
+        }
 
+        .navigation {
             flex-direction: column;
 
             align-items: stretch;
 
+            gap: 4px;
         }
 
-        .form-actions .btn {
-
+        .navigation a {
             width: 100%;
 
             text-align: center;
-
         }
 
+        .navigation .logout {
+            margin-left: 0;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+
+            align-items: stretch;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+
+            text-align: center;
+        }
     }
 
 </style>
@@ -503,25 +575,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-<div class="container">
-
-
 <!-- =====================================================
      CABEÇALHO
      ===================================================== -->
 
-<header class="page-header">
+<header class="header">
 
-    <h1>
-        Nova conta
+
+<div class="container header-content">
+
+    <h1 class="app-name">
+        Financeiro
     </h1>
 
-    <p>
-        Adiciona uma nova conta financeira ao sistema.
-    </p>
+</div>
+
 
 </header>
 
+<main class="container">
 
 <!-- =====================================================
      NAVEGAÇÃO
@@ -529,20 +601,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <nav class="navigation">
 
-    <a href="index.php">
-        Dashboard
-    </a>
 
-    <a href="accounts.php">
-        Contas
-    </a>
+<a href="index.php">
+    Dashboard
+</a>
 
-    <a href="transactions.php">
-        Transações
-    </a>
+<a href="transactions.php">
+    Transações
+</a>
+
+<a
+    href="accounts.php"
+    class="active"
+>
+    Contas
+</a>
+
+<a
+    href="logout.php"
+    class="logout"
+>
+    Sair
+</a>
+
 
 </nav>
 
+<!-- =====================================================
+     CABEÇALHO DA PÁGINA
+     ===================================================== -->
+
+<header class="page-header">
+
+
+<h1>
+    Nova conta
+</h1>
+
+<p>
+    Adiciona uma nova conta financeira ao sistema.
+</p>
+
+
+</header>
 
 <!-- =====================================================
      FORMULÁRIO
@@ -551,205 +652,205 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="form-card">
 
 
-    <?php if (!empty($errors)): ?>
+<?php if (!empty($errors)): ?>
 
-        <div class="errors">
+    <div class="errors">
 
-            <ul>
+        <ul>
 
-                <?php foreach ($errors as $error): ?>
+            <?php foreach ($errors as $error): ?>
 
-                    <li>
+                <li>
 
-                        <?= htmlspecialchars(
-                            $error,
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>
+                    <?= htmlspecialchars(
+                        $error,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
 
-                    </li>
+                </li>
 
-                <?php endforeach; ?>
+            <?php endforeach; ?>
 
-            </ul>
+        </ul>
 
-        </div>
+    </div>
 
-    <?php endif; ?>
-
-
-    <form method="POST">
-
-        <?= csrf_field() ?>
+<?php endif; ?>
 
 
-        <!-- =================================================
-             NOME
-             ================================================= -->
+<form method="POST">
 
-        <div class="form-group">
+    <?= csrf_field() ?>
 
-            <label for="name">
-                Nome da conta
-            </label>
 
-            <input
-                type="text"
-                id="name"
-                name="name"
-                value="<?= htmlspecialchars(
-                    $name,
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-                maxlength="100"
-                autocomplete="off"
-                required
+    <!-- =================================================
+         NOME
+         ================================================= -->
+
+    <div class="form-group">
+
+        <label for="name">
+            Nome da conta
+        </label>
+
+        <input
+            type="text"
+            id="name"
+            name="name"
+            value="<?= htmlspecialchars(
+                $name,
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>"
+            maxlength="100"
+            autocomplete="off"
+            required
+        >
+
+        <span class="form-help">
+            Exemplo: Conta principal, Poupança ou Carteira.
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         TIPO
+         ================================================= -->
+
+    <div class="form-group">
+
+        <label for="type">
+            Tipo de conta
+        </label>
+
+        <select
+            id="type"
+            name="type"
+            required
+        >
+
+            <option
+                value="checking"
+                <?= $type === 'checking'
+                    ? 'selected'
+                    : '' ?>
             >
+                Conta corrente
+            </option>
 
-            <span class="form-help">
-                Exemplo: Conta principal, Poupança ou Carteira.
-            </span>
-
-        </div>
-
-
-        <!-- =================================================
-             TIPO
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="type">
-                Tipo de conta
-            </label>
-
-            <select
-                id="type"
-                name="type"
-                required
+            <option
+                value="savings"
+                <?= $type === 'savings'
+                    ? 'selected'
+                    : '' ?>
             >
+                Poupança
+            </option>
 
-                <option
-                    value="checking"
-                    <?= $type === 'checking'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Conta corrente
-                </option>
-
-                <option
-                    value="savings"
-                    <?= $type === 'savings'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Poupança
-                </option>
-
-                <option
-                    value="cash"
-                    <?= $type === 'cash'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Dinheiro
-                </option>
-
-                <option
-                    value="credit_card"
-                    <?= $type === 'credit_card'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Cartão de crédito
-                </option>
-
-                <option
-                    value="investment"
-                    <?= $type === 'investment'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Investimento
-                </option>
-
-                <option
-                    value="other"
-                    <?= $type === 'other'
-                        ? 'selected'
-                        : '' ?>
-                >
-                    Outro
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- =================================================
-             SALDO INICIAL
-             ================================================= -->
-
-        <div class="form-group">
-
-            <label for="initial_balance">
-                Saldo inicial
-            </label>
-
-            <input
-                type="text"
-                id="initial_balance"
-                name="initial_balance"
-                value="<?= htmlspecialchars(
-                    $initialBalance,
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-                inputmode="decimal"
-                autocomplete="off"
-                required
+            <option
+                value="cash"
+                <?= $type === 'cash'
+                    ? 'selected'
+                    : '' ?>
             >
+                Dinheiro
+            </option>
 
-            <span class="form-help">
-                Podes utilizar ponto ou vírgula para os
-                centavos. Exemplo: 1250,50.
-            </span>
-
-        </div>
-
-
-        <!-- =================================================
-             BOTÕES
-             ================================================= -->
-
-        <div class="form-actions">
-
-            <button
-                type="submit"
-                class="btn btn-primary"
+            <option
+                value="credit_card"
+                <?= $type === 'credit_card'
+                    ? 'selected'
+                    : '' ?>
             >
-                Criar conta
-            </button>
+                Cartão de crédito
+            </option>
 
-            <a
-                href="accounts.php"
-                class="btn"
+            <option
+                value="investment"
+                <?= $type === 'investment'
+                    ? 'selected'
+                    : '' ?>
             >
-                Cancelar
-            </a>
+                Investimento
+            </option>
 
-        </div>
+            <option
+                value="other"
+                <?= $type === 'other'
+                    ? 'selected'
+                    : '' ?>
+            >
+                Outro
+            </option>
+
+        </select>
+
+    </div>
 
 
-    </form>
+    <!-- =================================================
+         SALDO INICIAL
+         ================================================= -->
+
+    <div class="form-group">
+
+        <label for="initial_balance">
+            Saldo inicial
+        </label>
+
+        <input
+            type="text"
+            id="initial_balance"
+            name="initial_balance"
+            value="<?= htmlspecialchars(
+                $initialBalance,
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>"
+            inputmode="decimal"
+            autocomplete="off"
+            required
+        >
+
+        <span class="form-help">
+            Podes utilizar ponto ou vírgula para os
+            centavos. Exemplo: 1250,50.
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         BOTÕES
+         ================================================= -->
+
+    <div class="form-actions">
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Criar conta
+        </button>
+
+        <a
+            href="accounts.php"
+            class="btn"
+        >
+            Cancelar
+        </a>
+
+    </div>
+
+
+</form>
+
 
 </div>
 
-
-</div>
+</main>
 
 </body>
 

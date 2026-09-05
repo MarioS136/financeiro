@@ -518,6 +518,68 @@ $recentTransactions =
 
         }
 
+            /* =====================================================
+       ESTADOS FINANCEIROS
+       ===================================================== */
+
+    .positive {
+        font-weight: bold;
+    }
+
+    .negative {
+        font-weight: bold;
+    }
+
+    .neutral {
+        font-weight: bold;
+    }
+
+
+    /* =====================================================
+       BOTÕES
+       ===================================================== */
+
+    .btn {
+        display: inline-block;
+        padding: 9px 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn:hover {
+        opacity: 0.85;
+    }
+
+    .btn-primary {
+        font-weight: bold;
+    }
+
+    .btn-danger {
+        font-weight: bold;
+    }
+
+
+    /* =====================================================
+       ESTADO DAS CONTAS
+       ===================================================== */
+
+    .status {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    .status-active {
+        border: 1px solid #999;
+    }
+
+    .status-inactive {
+        border: 1px solid #999;
+    }
     </style>
 
 </head>
@@ -652,8 +714,8 @@ $recentTransactions =
         <h3>Receitas</h3>
 
         <p>
-            <strong>
-                <?= format_money($totalIncomeCents) ?>
+            <strong class="positive">
+                + <?= format_money($totalIncomeCents) ?>
             </strong>
         </p>
     </div>
@@ -663,8 +725,8 @@ $recentTransactions =
         <h3>Despesas</h3>
 
         <p>
-            <strong>
-                <?= format_money($totalExpenseCents) ?>
+            <strong class="negative">
+                - <?= format_money($totalExpenseCents) ?>
             </strong>
         </p>
     </div>
@@ -674,7 +736,13 @@ $recentTransactions =
         <h3>Resultado</h3>
 
         <p>
-            <strong>
+            <strong
+                class="<? $resultCents > 0
+                ? 'positive'
+                : ($resultCents < 0
+                    ? 'negative'
+                    : 'neutral') ?>"
+            >
                 <?= format_money($resultCents) ?>
             </strong>
         </p>
@@ -685,9 +753,9 @@ $recentTransactions =
 
 <hr>
 
-<!-- =====================================================
+<!-- ======
      CONTAS
-     ===================================================== -->
+     ====== -->
 <section class="section">
 <h2>Contas</h2>
 
@@ -817,12 +885,14 @@ $recentTransactions =
                         (int) $account['is_active'] === 1
                     ): ?>
 
-                        Ativa
+                        <span class="status-active">
+                            Ativa
+                        </span>
 
                     <?php else: ?>
-
-                        Inativa
-
+                        <span class="status-inactive">
+                            Inativa
+                        </span>
                     <?php endif; ?>
 
                 </p>

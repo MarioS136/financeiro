@@ -280,73 +280,243 @@ $recentTransactions =
     <title>Dashboard</title>
     <style>
 
-            .summary-card {
-                display: flex;
-                gap: 20px;
-                margin: 20px 0;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #222;
+        }
+
+        a {
+            color: inherit;
+        }
+
+
+        /* =====================================================
+        LAYOUT PRINCIPAL
+        ===================================================== */
+
+        .container {
+            width: min(1200px, 92%);
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+        CABEÇALHO
+        ===================================================== */
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+            padding: 18px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .app-name {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .user-info {
+            text-align: right;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+        NAVEGAÇÃO
+        ===================================================== */
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 10px 16px;
+            border-radius: 6px;
+        }
+
+        .navigation a:hover {
+            background: #eeeeee;
+        }
+
+        .navigation .logout {
+            margin-left: auto;
+        }
+
+
+        /* =====================================================
+        SECÇÕES
+        ===================================================== */
+
+        .section {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+
+        /* =====================================================
+        FILTRO
+        ===================================================== */
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-form select,
+        .filter-form button {
+            padding: 9px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .filter-form button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+        RESUMO
+        ===================================================== */
+
+        .summary-cards {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .summary-card {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .summary-card h3 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .summary-card p {
+            font-size: 24px;
+            margin-bottom: 0;
+        }
+
+
+        /* =====================================================
+        CONTAS
+        ===================================================== */
+
+        .account-cards {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .account-card {
+            flex: 1 1 280px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .account-card h3 {
+            margin-top: 0;
+        }
+
+        .account-balance {
+            font-size: 28px;
+        }
+
+
+        /* =====================================================
+        TRANSAÇÕES
+        ===================================================== */
+
+        .transactions-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .transactions-table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transactions-table-wrapper th,
+        .transactions-table-wrapper td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .transactions-table-wrapper th {
+            background: #f5f5f5;
+        }
+
+
+        /* =====================================================
+        RESPONSIVO
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .summary-card {
-                flex: 1;
-                border: 1px solid #ccc;
-                padding: 20px;
-                border-radius: 8px;
-            }
-
-            .summary-card h3 {
-                margin-top: 0;
-            }
-
-            .summary-card p {
-                font-size: 24px;
-                margin-bottom: 0;
-            }
-
-            .account-cards {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 20px;
-                margin: 20px 0;
-            }
-
-            .account-card {
-                flex: 1 1 280px;
-                border: 1px solid #ccc;
-                padding: 20px;
-                border-radius: 8px;
-                box-sizing: border-box;
-            }
-
-            .account-card h3 {
-                margin-top: 0;
-            }
-
-            .account-balance {
-                font-size: 28px;
-            }
-
-            .transactions-table-wrapper {
-                width: 100%;
-                overflow-x: auto;
-                margin: 20px 0;
-            }
-
-            .transactions-table-wrapper table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .transactions-table-wrapper th,
-            .transactions-table-wrapper td {
-                border: 1px solid #ccc;
-                padding: 10px;
+            .user-info {
                 text-align: left;
             }
 
-            .transactions-table-wrapper th {
-                font-weight: bold;
+            .navigation .logout {
+                margin-left: 0;
             }
+
+            .summary-cards {
+                flex-direction: column;
+            }
+
+            .summary-card {
+                width: 100%;
+            }
+
+        }
 
     </style>
 
@@ -354,33 +524,67 @@ $recentTransactions =
 
 <body>
 
-<h1>Dashboard Financeiro</h1>
+<header class="header">
+
+    <div class="container header-content">
+
+        <h1 class="app-name">
+            Dashboard Financeiro
+        </h1>
+
+        <div class="user-info">
+
+            <div>
+                Olá,
+                <strong>
+                    <?= htmlspecialchars(
+                        $userName,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </strong>
+            </div>
+
+            <div>
+                Perfil:
+                <?= htmlspecialchars(
+                    $userRole,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
 
 
-<p>
+<main class="container">
 
-    Bem-vindo,
+    <nav class="navigation">
 
-    <?= htmlspecialchars(
-        $userName,
-        ENT_QUOTES,
-        'UTF-8'
-    ) ?>!
+        <a href="index.php">
+            Dashboard
+        </a>
 
-</p>
+        <a href="accounts.php">
+            Contas
+        </a>
 
+        <a href="transactions.php">
+            Transações
+        </a>
 
-<p>
+        <a
+            href="logout.php"
+            class="logout"
+        >
+            Sair
+        </a>
 
-    Perfil:
-
-    <?= htmlspecialchars(
-        $userRole,
-        ENT_QUOTES,
-        'UTF-8'
-    ) ?>
-
-</p>
+    </nav>
 
 
 <hr>

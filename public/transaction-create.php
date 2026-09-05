@@ -25,9 +25,6 @@ $transactionDate = date('Y-m-d');
  * =========================================================
  * CONTAS
  * =========================================================
- *
- * Apenas contas do utilizador que estejam ativas
- * podem receber novas transações.
  */
 
 $stmt = $pdo->prepare(
@@ -49,13 +46,6 @@ $accounts = $stmt->fetchAll();
  * =========================================================
  * CATEGORIAS
  * =========================================================
- *
- * Buscamos as categorias do utilizador.
- *
- * O JavaScript irá filtrar visualmente as categorias
- * conforme o tipo escolhido.
- *
- * O PHP continuará a validar o tipo no servidor.
  */
 
 $stmt = $pdo->prepare(
@@ -82,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 1. CSRF
+     * CSRF
      */
 
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
@@ -93,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 2. Receber dados
+     * Receber dados
      */
 
     $type = $_POST['type'] ?? '';
@@ -121,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 3. Validar tipo
+     * Validar tipo
      */
 
     if (!in_array(
@@ -136,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 4. Validar conta
+     * Validar conta
      */
 
     if (!$accountId || $accountId < 1) {
@@ -147,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 5. Validar categoria
+     * Validar categoria
      */
 
     if (!$categoryId || $categoryId < 1) {
@@ -158,13 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 6. Validar valor
-     *
-     * Aceitamos:
-     *
-     * 10
-     * 10.50
-     * 10,50
+     * Validar valor
      */
 
     $normalizedAmount =
@@ -187,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 7. Validar descrição
+     * Validar descrição
      */
 
     if (mb_strlen($description) > 255) {
@@ -198,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     /*
-     * 8. Validar data
+     * Validar data
      */
 
     $dateObject =
@@ -219,13 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /*
      * =========================================================
-     * 9. VERIFICAR CONTA
+     * VERIFICAR CONTA
      * =========================================================
-     *
-     * A conta tem obrigatoriamente de:
-     *
-     * - pertencer ao utilizador;
-     * - estar ativa.
      */
 
     if ($accountId) {
@@ -254,13 +233,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /*
      * =========================================================
-     * 10. VERIFICAR CATEGORIA
+     * VERIFICAR CATEGORIA
      * =========================================================
-     *
-     * A categoria tem obrigatoriamente de:
-     *
-     * - pertencer ao utilizador;
-     * - corresponder ao tipo da transação.
      */
 
     if ($categoryId) {
@@ -296,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /*
      * =========================================================
-     * 11. CRIAR TRANSAÇÃO
+     * CRIAR TRANSAÇÃO
      * =========================================================
      */
 
@@ -384,302 +358,616 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
+
 <html lang="pt">
 
 <head>
 
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta charset="UTF-8">
 
-    <title>Nova transação</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Nova transação</title>
+
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f6f8;
+        color: #222;
+    }
+
+
+    a {
+        color: inherit;
+    }
+
+
+    .container {
+        width: min(900px, 92%);
+        margin: 0 auto;
+    }
+
+
+    .header {
+        background: #ffffff;
+        border-bottom: 1px solid #ddd;
+        padding: 18px 0;
+        margin-bottom: 25px;
+    }
+
+
+    .app-name {
+        margin: 0;
+        font-size: 24px;
+    }
+
+
+    .navigation {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+
+    .navigation a {
+        display: inline-block;
+        padding: 10px 16px;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 7px;
+        text-decoration: none;
+    }
+
+
+    .navigation a:hover {
+        background: #eeeeee;
+    }
+
+
+    .navigation .active {
+        font-weight: bold;
+        background: #eeeeee;
+    }
+
+
+    .section {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 24px;
+        margin-bottom: 25px;
+    }
+
+
+    .section h1 {
+        margin-top: 0;
+        margin-bottom: 5px;
+        font-size: 28px;
+    }
+
+
+    .section-description {
+        color: #666;
+        margin-top: 0;
+        margin-bottom: 25px;
+    }
+
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        background: #ffffff;
+    }
+
+
+    textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #888;
+    }
+
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+    }
+
+
+    .btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 14px;
+        background: #ffffff;
+    }
+
+
+    .btn:hover {
+        background: #eeeeee;
+    }
+
+
+    .btn-primary {
+        font-weight: bold;
+    }
+
+
+    .errors {
+        border: 1px solid #aaa;
+        background: #fafafa;
+        border-radius: 7px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+    }
+
+
+    .errors ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+
+    .errors li {
+        margin-bottom: 5px;
+    }
+
+
+    .errors li:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .help-text {
+        display: block;
+        margin-top: 6px;
+        color: #666;
+        font-size: 13px;
+    }
+
+
+    @media (max-width: 700px) {
+
+        .container {
+            width: 94%;
+        }
+
+
+        .header {
+            padding: 15px 0;
+        }
+
+
+        .app-name {
+            font-size: 21px;
+        }
+
+
+        .navigation {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+
+        .navigation a {
+            text-align: center;
+            width: 100%;
+        }
+
+
+        .section {
+            padding: 18px;
+        }
+
+
+        .section h1 {
+            font-size: 24px;
+        }
+
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+
+        .form-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
+</style>
+
 
 </head>
 
 <body>
 
-<h1>Nova transação</h1>
+<header class="header">
 
 
-<p>
+<div class="container">
+
+    <h1 class="app-name">
+        Financeiro
+    </h1>
+
+</div>
+
+
+</header>
+
+<main class="container">
+
+
+<!-- =====================================================
+     NAVEGAÇÃO
+     ===================================================== -->
+
+<nav class="navigation">
 
     <a href="index.php">
         Dashboard
     </a>
 
-    |
 
-    <a href="transactions.php">
+    <a href="accounts.php">
+        Contas
+    </a>
+
+
+    <a
+        href="transactions.php"
+        class="active"
+    >
         Transações
     </a>
 
-</p>
+</nav>
 
 
-<hr>
+<!-- =====================================================
+     FORMULÁRIO
+     ===================================================== -->
+
+<section class="section">
+
+    <h1>
+        Nova transação
+    </h1>
 
 
-<?php if (!empty($errors)): ?>
+    <p class="section-description">
+        Regista uma nova receita ou despesa.
+    </p>
 
-    <ul>
 
-        <?php foreach ($errors as $error): ?>
+    <?php if (!empty($errors)): ?>
 
-            <li>
+        <div class="errors">
 
-                <?= htmlspecialchars(
-                    $error,
+            <ul>
+
+                <?php foreach ($errors as $error): ?>
+
+                    <li>
+
+                        <?= htmlspecialchars(
+                            $error,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+
+                    </li>
+
+                <?php endforeach; ?>
+
+            </ul>
+
+        </div>
+
+    <?php endif; ?>
+
+
+    <form method="POST">
+
+        <?= csrf_field() ?>
+
+
+        <!-- TIPO -->
+
+        <div class="form-group">
+
+            <label for="type">
+                Tipo
+            </label>
+
+
+            <select
+                id="type"
+                name="type"
+                required
+            >
+
+                <option
+                    value="expense"
+                    <?= $type === 'expense'
+                        ? 'selected'
+                        : '' ?>
+                >
+                    Despesa
+                </option>
+
+
+                <option
+                    value="income"
+                    <?= $type === 'income'
+                        ? 'selected'
+                        : '' ?>
+                >
+                    Receita
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- CONTA -->
+
+        <div class="form-group">
+
+            <label for="account_id">
+                Conta
+            </label>
+
+
+            <select
+                id="account_id"
+                name="account_id"
+                required
+            >
+
+                <option value="">
+                    -- Seleciona uma conta --
+                </option>
+
+
+                <?php foreach ($accounts as $account): ?>
+
+                    <option
+                        value="<?= (int) $account['id'] ?>"
+                        <?= (string) $accountId ===
+                            (string) $account['id']
+                            ? 'selected'
+                            : '' ?>
+                    >
+
+                        <?= htmlspecialchars(
+                            $account['name'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+
+                    </option>
+
+                <?php endforeach; ?>
+
+            </select>
+
+            <span class="help-text">
+                Apenas contas ativas aparecem nesta lista.
+            </span>
+
+        </div>
+
+
+        <!-- CATEGORIA -->
+
+        <div class="form-group">
+
+            <label for="category_id">
+                Categoria
+            </label>
+
+
+            <select
+                id="category_id"
+                name="category_id"
+                required
+            >
+
+                <option value="">
+                    -- Seleciona uma categoria --
+                </option>
+
+
+                <?php foreach ($categories as $category): ?>
+
+                    <option
+                        value="<?= (int) $category['id'] ?>"
+                        data-type="<?= htmlspecialchars(
+                            $category['type'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>"
+                        <?= (string) $categoryId ===
+                            (string) $category['id']
+                            ? 'selected'
+                            : '' ?>
+                    >
+
+                        <?= htmlspecialchars(
+                            $category['name'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+
+                    </option>
+
+                <?php endforeach; ?>
+
+            </select>
+
+        </div>
+
+
+        <!-- VALOR -->
+
+        <div class="form-group">
+
+            <label for="amount">
+                Valor
+            </label>
+
+
+            <input
+                type="text"
+                id="amount"
+                name="amount"
+                value="<?= htmlspecialchars(
+                    $amount,
                     ENT_QUOTES,
                     'UTF-8'
-                ) ?>
-
-            </li>
-
-        <?php endforeach; ?>
-
-    </ul>
-
-<?php endif; ?>
-
-
-<form method="POST">
-
-    <?= csrf_field() ?>
-
-
-    <!-- TIPO -->
-
-    <div>
-
-        <label for="type">
-            Tipo
-        </label>
-
-
-        <select
-            id="type"
-            name="type"
-            required
-        >
-
-            <option
-                value="expense"
-                <?= $type === 'expense'
-                    ? 'selected'
-                    : '' ?>
+                ) ?>"
+                inputmode="decimal"
+                placeholder="0,00"
+                maxlength="16"
+                required
             >
-                Despesa
-            </option>
 
 
-            <option
-                value="income"
-                <?= $type === 'income'
-                    ? 'selected'
-                    : '' ?>
+            <span class="help-text">
+                Podes utilizar vírgula ou ponto como separador decimal.
+            </span>
+
+        </div>
+
+
+        <!-- DATA -->
+
+        <div class="form-group">
+
+            <label for="transaction_date">
+                Data
+            </label>
+
+
+            <input
+                type="date"
+                id="transaction_date"
+                name="transaction_date"
+                value="<?= htmlspecialchars(
+                    $transactionDate,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
+                required
             >
-                Receita
-            </option>
 
-        </select>
-
-    </div>
+        </div>
 
 
-    <br>
+        <!-- DESCRIÇÃO -->
+
+        <div class="form-group">
+
+            <label for="description">
+                Descrição
+            </label>
 
 
-    <!-- CONTA -->
-
-    <div>
-
-        <label for="account_id">
-            Conta
-        </label>
-
-
-        <select
-            id="account_id"
-            name="account_id"
-            required
-        >
-
-            <option value="">
-                -- Seleciona uma conta --
-            </option>
-
-
-            <?php foreach ($accounts as $account): ?>
-
-                <option
-                    value="<?= (int) $account['id'] ?>"
-                    <?= (string) $accountId ===
-                        (string) $account['id']
-                        ? 'selected'
-                        : '' ?>
-                >
-
-                    <?= htmlspecialchars(
-                        $account['name'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-
-                </option>
-
-            <?php endforeach; ?>
-
-        </select>
-
-    </div>
-
-
-    <br>
-
-
-    <!-- CATEGORIA -->
-
-    <div>
-
-        <label for="category_id">
-            Categoria
-        </label>
-
-
-        <select
-            id="category_id"
-            name="category_id"
-            required
-        >
-
-            <option value="">
-                -- Seleciona uma categoria --
-            </option>
-
-
-            <?php foreach ($categories as $category): ?>
-
-                <option
-                    value="<?= (int) $category['id'] ?>"
-                    data-type="<?= htmlspecialchars(
-                        $category['type'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                    <?= (string) $categoryId ===
-                        (string) $category['id']
-                        ? 'selected'
-                        : '' ?>
-                >
-
-                    <?= htmlspecialchars(
-                        $category['name'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-
-                </option>
-
-            <?php endforeach; ?>
-
-        </select>
-
-    </div>
-
-
-    <br>
-
-
-    <!-- VALOR -->
-
-    <div>
-
-        <label for="amount">
-            Valor
-        </label>
-
-
-        <input
-            type="text"
-            id="amount"
-            name="amount"
-            value="<?= htmlspecialchars(
-                $amount,
+            <textarea
+                id="description"
+                name="description"
+                maxlength="255"
+                placeholder="Ex.: Supermercado, salário, renda..."
+            ><?= htmlspecialchars(
+                $description,
                 ENT_QUOTES,
                 'UTF-8'
-            ) ?>"
-            inputmode="decimal"
-            placeholder="0.00"
-            required
-        >
-
-    </div>
+            ) ?></textarea>
 
 
-    <br>
+            <span class="help-text">
+                Opcional. Máximo de 255 caracteres.
+            </span>
+
+        </div>
 
 
-    <!-- DATA -->
+        <!-- AÇÕES -->
 
-    <div>
+        <div class="form-actions">
 
-        <label for="transaction_date">
-            Data
-        </label>
-
-
-        <input
-            type="date"
-            id="transaction_date"
-            name="transaction_date"
-            value="<?= htmlspecialchars(
-                $transactionDate,
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>"
-            required
-        >
-
-    </div>
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Guardar transação
+            </button>
 
 
-    <br>
+            <a
+                href="transactions.php"
+                class="btn"
+            >
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</section>
 
 
-    <!-- DESCRIÇÃO -->
-
-    <div>
-
-        <label for="description">
-            Descrição
-        </label>
-
-
-        <textarea
-            id="description"
-            name="description"
-            maxlength="255"
-        ><?= htmlspecialchars(
-            $description,
-            ENT_QUOTES,
-            'UTF-8'
-        ) ?></textarea>
-
-    </div>
-
-
-    <br>
-
-
-    <button type="submit">
-        Guardar transação
-    </button>
-
-</form>
-
+</main>
 
 <script>
 

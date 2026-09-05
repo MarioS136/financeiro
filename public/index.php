@@ -326,6 +326,28 @@ $recentTransactions =
                 font-size: 28px;
             }
 
+            .transactions-table-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                margin: 20px 0;
+            }
+
+            .transactions-table-wrapper table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .transactions-table-wrapper th,
+            .transactions-table-wrapper td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: left;
+            }
+
+            .transactions-table-wrapper th {
+                font-weight: bold;
+            }
+
     </style>
 
 </head>

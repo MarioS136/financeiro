@@ -234,8 +234,9 @@ $stmt = $pdo->prepare(
         ON c.id = t.category_id
        AND c.user_id = :user_id_category
 
-     WHERE t.user_id = :user_id_transaction
-
+     WHERE t.user_id = :user_id_transaction'
+     . $dateCondition
+     . '
      ORDER BY
         t.transaction_date DESC,
         t.id DESC
@@ -243,16 +244,21 @@ $stmt = $pdo->prepare(
      LIMIT 5'
 );
 
-$stmt->execute([
-    'user_id_account' =>
-        $userId,
+$stmt->execute(
+    array_merge(
+        [
+            'user_id_account' =>
+                $userId,
 
-    'user_id_category' =>
-        $userId,
+            'user_id_category' =>
+                $userId,
 
-    'user_id_transaction' =>
-        $userId
-]);
+            'user_id_transaction' =>
+                $userId
+        ],
+        $dateParams
+    )
+);
 
 $recentTransactions =
     $stmt->fetchAll();
@@ -272,6 +278,31 @@ $recentTransactions =
     >
 
     <title>Dashboard</title>
+    <style>
+
+            .summary-card {
+                display: flex;
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .summary-card {
+                flex: 1;
+                border: 1px solid #ccc;
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .summary-card h3 {
+                margin-top: 0;
+            }
+
+            .summary-card p {
+                font-size: 24px;
+                margin-bottom: 0;
+            }
+
+    </style>
 
 </head>
 
@@ -344,65 +375,90 @@ $recentTransactions =
      ===================================================== -->
 
 <h2>Resumo financeiro</h2>
+<form method="GET">
+
+    <label for="period">
+        Período:
+    </label>
+
+    <select
+        id="period"
+        name="period"
+    >
+
+        <option
+            value="all"
+            <?= $period === 'all' ? 'selected' : '' ?>
+        >
+            Todos
+        </option>
+
+        <option
+            value="this_month"
+            <?= $period === 'this_month' ? 'selected' : '' ?>
+        >
+            Este mês
+        </option>
+
+        <option
+            value="last_month"
+            <?= $period === 'last_month' ? 'selected' : '' ?>
+        >
+            Mês anterior
+        </option>
+
+        <option
+            value="last_30_days"
+            <?= $period === 'last_30_days' ? 'selected' : '' ?>
+        >
+            Últimos 30 dias
+        </option>
+
+    </select>
+
+    <button type="submit">
+        Filtrar
+    </button>
+
+</form>
+
+<br>
+
+<div class="summary-card">
+
+    <div class="summary-card">
+        <h3>Receitas</h3>
+
+        <p>
+            <strong>
+                <?= format_money($totalIncomeCents) ?>
+            </strong>
+        </p>
+    </div>
 
 
-<table border="1" cellpadding="8">
+    <div class="summary-card">
+        <h3>Despesas</h3>
 
-    <thead>
-
-        <tr>
-
-            <th>Receitas</th>
-
-            <th>Despesas</th>
-
-            <th>Resultado</th>
-
-        </tr>
-
-    </thead>
+        <p>
+            <strong>
+                <?= format_money($totalExpenseCents) ?>
+            </strong>
+        </p>
+    </div>
 
 
-    <tbody>
+    <div class="summary-card">
+        <h3>Resultado</h3>
 
-        <tr>
+        <p>
+            <strong>
+                <?= format_money($resultCents) ?>
+            </strong>
+        </p>
+    </div>
 
-            <td>
-
-                <?= format_money(
-                    $totalIncomeCents
-                ) ?>
-
-            </td>
-
-
-            <td>
-
-                <?= format_money(
-                    $totalExpenseCents
-                ) ?>
-
-            </td>
-
-
-            <td>
-
-                <strong>
-
-                    <?= format_money(
-                        $resultCents
-                    ) ?>
-
-                </strong>
-
-            </td>
-
-        </tr>
-
-    </tbody>
-
-</table>
-
+</div>
 
 <hr>
 

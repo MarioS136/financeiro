@@ -580,6 +580,78 @@ $recentTransactions =
     .status-inactive {
         border: 1px solid #999;
     }
+
+    /* ================
+        RESPONSIVIDADE
+   ============= */
+
+        @media (max-width: 768px) {
+
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+
+
+            /* Resumo */
+
+            .summary-card {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .summary-card .summary-card {
+                width: 100%;
+                box-sizing: border-box;
+                margin: 0;
+            }
+
+
+            /* Contas */
+
+            .account-cards {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .account-card {
+                width: 100%;
+                flex: none;
+            }
+
+
+            /* Filtro */
+
+            form {
+                max-width: 100%;
+            }
+
+            select,
+            input,
+            button {
+                max-width: 100%;
+            }
+
+
+            /* Tabela */
+
+            .transactions-table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .transactions-table-wrapper table {
+                min-width: 700px;
+            }
+
+        }
     </style>
 
 </head>
